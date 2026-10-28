@@ -2,8 +2,8 @@ from typing import Literal, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from auth import current_user
-from backend.db import get_conn
+from routers.auth import current_user
+from db import get_conn
 
 router = APIRouter(prefix="/listings", tags=['listings'])
 
