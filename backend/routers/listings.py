@@ -19,22 +19,22 @@ class ListingBody(BaseModel):
 
 @router.post('')
 def create_listing(body: ListingBody, user=Depends(current_user)):
-    with get_conn as conn:
+    with get_conn() as conn:
         row = conn.execute(
             "INSERT INTO listings (agency_id, title, description, price, type, beds, baths, area, city) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
             (user['agency_id'], body.title, body.description, body.price, body.type, body.beds, body.baths, body.area, body.city),
         ).fetchone()
-        return {'id': str[row[0]]}
+        return {'id': str(row[0])}
     
 @router.get('')  
 def my_listings(user=Depends(current_user)):
-    with get_conn as conn:
+    with get_conn() as conn:
         row = conn.execute(
-            "SELECT id, title, price, type, beds, baths, city, status"
+            "SELECT id, title, price, type, beds, baths, city, status "
             "FROM listings WHERE  agency_id = %s ORDER BY created_at DESC",
             (user['agency_id'],),
-        )
+        ).fetchone()
     return [ 
         { 
          'id': str(row[0]), 
@@ -53,7 +53,7 @@ def get_listing(listing_id: str, user=Depends(current_user)):
     with get_conn() as conn:
         r = conn.execute(
             'SELECT id, title, description, price, type, beds, baths, area, city, status, photo_urls '
-            'FROM listings WHERE id = %s AND agency_id = %s',
+            ' FROM listings WHERE id = %s AND agency_id = %s',
             (listing_id, user['agency_id'])
         ).fetchone()
     if not r:
