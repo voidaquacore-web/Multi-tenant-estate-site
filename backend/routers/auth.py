@@ -68,7 +68,7 @@ def login(body: LoginBody):
 def current_user(creds: HTTPAuthorizationCredentials = Depends(bearer)):
     try:
         data = jwt.decode(creds.credentials, JWT_SECRET, algorithms=['HS256'])
-    except jwt.PyJWKError:
+    except jwt.InvalidTokenError:
         raise HTTPException(401, 'Invalid or expired token')
     return data
 
